@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kyau Student Portal</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">KS</div>
+      <div>
+        <div class="brand-name">Kyau Student Portal</div>
+        <div class="brand-sub">Information &amp; Result Management</div>
+      </div>
+    </div>
+    <nav class="nav" id="nav">
+      <button data-view="dashboard" class="active"><span class="ico">&#9638;</span> Dashboard</button>
+      <button data-view="students"><span class="ico">&#9786;</span> Students</button>
+      <button data-view="profile"><span class="ico">&#9873;</span> Student Profile</button>
+      <button data-view="courses"><span class="ico">&#9776;</span> Courses</button>
+      <button data-view="marks"><span class="ico">&#9998;</span> Marks Entry</button>
+      <button data-view="search"><span class="ico">&#9906;</span> Result Search</button>
+    </nav>
+    <div class="side-foot">
+      <div class="storage-note" id="storageNote"></div>
+      <button class="btn ghost-light" id="btnReset">Reset sample data</button>
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <!-- ---------- DASHBOARD ---------- -->
+    <section class="view active" id="view-dashboard">
+      <header class="page-head">
+        <div>
+          <h1>Dashboard</h1>
+          <p class="muted">Overview of students, courses and academic results.</p>
+        </div>
+      </header>
+
+      <div class="stats" id="dashStats"></div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h2>Grade distribution</h2>
+          <p class="muted small">Number of results recorded for each letter grade.</p>
+          <div id="gradeChart" class="hbars"></div>
+        </div>
+        <div class="card">
+          <h2>Top performers</h2>
+          <p class="muted small">Highest CGPA among students with results.</p>
+          <div id="topList"></div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h2>Department summary</h2>
+          <div id="deptSummary" class="table-wrap"></div>
+        </div>
+        <div class="card">
+          <h2>Grading scale</h2>
+          <p class="muted small">GPA = &Sigma; (grade point &times; credit) &divide; &Sigma; credit</p>
+          <div id="scaleTable" class="table-wrap"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- STUDENTS ---------- -->
+    <section class="view" id="view-students">
+      <header class="page-head">
+        <div>
+          <h1>Students</h1>
+          <p class="muted">Register new students and manage existing records.</p>
+        </div>
+      </header>
+
+      <div class="grid-form">
+        <div class="card">
+          <h2 id="studentFormTitle">Register student</h2>
+          <form id="studentForm" novalidate>
+            <div class="field">
+              <label for="sId">Student ID</label>
+              <input id="sId" type="text" maxlength="20" placeholder="STU-1001" autocomplete="off">
+              <small class="err" data-for="sId"></small>
+            </div>
+            <div class="field">
+              <label for="sName">Full name</label>
+              <input id="sName" type="text" maxlength="60" placeholder="e.g. Nusrat Jahan" autocomplete="off">
+              <small class="err" data-for="sName"></small>
+            </div>
+            <div class="row2">
+              <div class="field">
+                <label for="sDept">Department</label>
+                <select id="sDept"></select>
+              </div>
+              <div class="field">
+                <label for="sSem">Current semester</label>
+                <select id="sSem"></select>
+              </div>
+            </div>
+            <div class="row2">
+              <div class="field">
+                <label for="sFather">Father's name <span class="opt">(optional)</span></label>
+                <input id="sFather" type="text" maxlength="60" autocomplete="off">
+                <small class="err" data-for="sFather"></small>
+              </div>
+              <div class="field">
+                <label for="sMother">Mother's name <span class="opt">(optional)</span></label>
+                <input id="sMother" type="text" maxlength="60" autocomplete="off">
+                <small class="err" data-for="sMother"></small>
+              </div>
+            </div>
+            <div class="field">
+              <label for="sEmail">Email</label>
+              <input id="sEmail" type="email" maxlength="80" placeholder="name@example.com" autocomplete="off">
+              <small class="err" data-for="sEmail"></small>
+            </div>
+            <div class="row2">
+              <div class="field">
+                <label for="sPhone">Contact number <span class="opt">(optional)</span></label>
+                <input id="sPhone" type="text" maxlength="20" placeholder="01711-000000" autocomplete="off">
+                <small class="err" data-for="sPhone"></small>
+              </div>
+              <div class="field">
+                <label for="sDob">Date of birth <span class="opt">(optional)</span></label>
+                <input id="sDob" type="date">
+              </div>
+            </div>
+            <div class="actions">
+              <button type="submit" class="btn primary" id="studentSubmit">Register student</button>
+              <button type="button" class="btn" id="studentCancel" hidden>Cancel edit</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="list-head">
+            <h2>Student list <span class="count" id="studentCount"></span></h2>
+            <div class="filters">
+              <input id="studentSearch" type="search" placeholder="Search by ID, name or email">
+              <select id="studentDeptFilter"></select>
+            </div>
+          </div>
+          <div class="table-wrap" id="studentTable"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- STUDENT PROFILE ---------- -->
+    <section class="view" id="view-profile">
+      <header class="page-head">
+        <div>
+          <h1>Student profile</h1>
+          <p class="muted">Add and update your photo, parents' names, contact number and email. Your result sheet is shown below.</p>
+        </div>
+        <div class="head-actions no-print">
+          <button class="btn" id="profileBack">&larr; All students</button>
+          <button class="btn primary" id="profilePrint">Print</button>
+        </div>
+      </header>
+      <div class="card picker no-print" id="profilePicker">
+        <label for="profileSelect">Select student</label>
+        <select id="profileSelect"></select>
+      </div>
+      <div class="card edit-card no-print" id="profileFormCard" hidden>
+        <h2>Edit profile</h2>
+        <p class="muted small">Fill in your own details and press Save. Your photo is stored only in this browser.</p>
+        <form id="profileForm" novalidate>
+          <div class="photo-row">
+            <div id="photoPreview" class="photo-preview"></div>
+            <div class="photo-actions">
+              <input id="pPhoto" type="file" accept="image/*" hidden>
+              <div class="photo-buttons">
+                <button type="button" class="btn" id="pPhotoBtn">Choose photo</button>
+                <button type="button" class="btn" id="pPhotoRemove">Remove photo</button>
+              </div>
+              <small class="muted">JPG or PNG, up to 5 MB. The photo is cropped to a square.</small>
+              <small class="err" data-for="pPhoto"></small>
+            </div>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="pFather">Father's name</label>
+              <input id="pFather" type="text" maxlength="60" placeholder="Father's full name" autocomplete="off">
+              <small class="err" data-for="pFather"></small>
+            </div>
+            <div class="field">
+              <label for="pMother">Mother's name</label>
+              <input id="pMother" type="text" maxlength="60" placeholder="Mother's full name" autocomplete="off">
+              <small class="err" data-for="pMother"></small>
+            </div>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label for="pPhone">Contact number</label>
+              <input id="pPhone" type="text" maxlength="20" placeholder="01711-000000" autocomplete="off">
+              <small class="err" data-for="pPhone"></small>
+            </div>
+            <div class="field">
+              <label for="pEmail">Email</label>
+              <input id="pEmail" type="email" maxlength="80" placeholder="name@example.com" autocomplete="off">
+              <small class="err" data-for="pEmail"></small>
+            </div>
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn primary">Save profile</button>
+            <button type="button" class="btn" id="profileCancel">Cancel</button>
+          </div>
+        </form>
+      </div>
+      <div id="profileBody"></div>
+    </section>
+
+    <!-- ---------- COURSES ---------- -->
+    <section class="view" id="view-courses">
+      <header class="page-head">
+        <div>
+          <h1>Courses</h1>
+          <p class="muted">Course catalogue with credit hours used for GPA calculation.</p>
+        </div>
+      </header>
+
+      <div class="grid-form">
+        <div class="card">
+          <h2 id="courseFormTitle">Add course</h2>
+          <form id="courseForm" novalidate>
+            <div class="field">
+              <label for="cCode">Course code</label>
+              <input id="cCode" type="text" maxlength="12" placeholder="CSE301" autocomplete="off">
+              <small class="err" data-for="cCode"></small>
+            </div>
+            <div class="field">
+              <label for="cTitle">Course title</label>
+              <input id="cTitle" type="text" maxlength="70" placeholder="Database Management Systems" autocomplete="off">
+              <small class="err" data-for="cTitle"></small>
+            </div>
+            <div class="row2">
+              <div class="field">
+                <label for="cCredit">Credit hours</label>
+                <select id="cCredit"></select>
+              </div>
+              <div class="field">
+                <label for="cDept">Offered by</label>
+                <select id="cDept"></select>
+              </div>
+            </div>
+            <div class="actions">
+              <button type="submit" class="btn primary" id="courseSubmit">Add course</button>
+              <button type="button" class="btn" id="courseCancel" hidden>Cancel edit</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="list-head">
+            <h2>Course list <span class="count" id="courseCount"></span></h2>
+            <div class="filters">
+              <input id="courseSearch" type="search" placeholder="Search code or title">
+            </div>
+          </div>
+          <div class="table-wrap" id="courseTable"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- MARKS ENTRY ---------- -->
+    <section class="view" id="view-marks">
+      <header class="page-head">
+        <div>
+          <h1>Marks entry</h1>
+          <p class="muted">Enter marks out of 100. Grade, grade point and GPA are calculated automatically.</p>
+        </div>
+      </header>
+
+      <div class="grid-form">
+        <div class="card">
+          <h2 id="markFormTitle">Enter marks</h2>
+          <form id="markForm" novalidate>
+            <div class="field">
+              <label for="mStudent">Student</label>
+              <select id="mStudent"></select>
+              <small class="err" data-for="mStudent"></small>
+            </div>
+            <div class="field">
+              <label for="mCourse">Course</label>
+              <select id="mCourse"></select>
+              <small class="err" data-for="mCourse"></small>
+            </div>
+            <div class="row2">
+              <div class="field">
+                <label for="mSem">Semester</label>
+                <select id="mSem"></select>
+              </div>
+              <div class="field">
+                <label for="mMarks">Marks (0 &ndash; 100)</label>
+                <input id="mMarks" type="number" min="0" max="100" step="0.5" placeholder="e.g. 78">
+                <small class="err" data-for="mMarks"></small>
+              </div>
+            </div>
+            <div class="preview" id="markPreview">
+              <span class="muted">Enter marks to preview the grade.</span>
+            </div>
+            <div class="actions">
+              <button type="submit" class="btn primary" id="markSubmit">Save result</button>
+              <button type="button" class="btn" id="markCancel" hidden>Cancel edit</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card">
+          <div class="list-head">
+            <h2>Recorded results <span class="count" id="markCount"></span></h2>
+            <div class="filters">
+              <input id="markSearch" type="search" placeholder="Search student or course">
+            </div>
+          </div>
+          <div class="table-wrap" id="markTable"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ---------- RESULT SEARCH ---------- -->
+    <section class="view" id="view-search">
+      <header class="page-head">
+        <div>
+          <h1>Result search</h1>
+          <p class="muted">Find a student by ID or name to see the full result sheet.</p>
+        </div>
+        <div class="head-actions no-print">
+          <button class="btn" id="searchProfile" hidden>Open full profile</button>
+          <button class="btn primary" id="searchPrint" hidden>Print result</button>
+        </div>
+      </header>
+
+      <div class="card search-card no-print">
+        <label for="rsQuery" class="sr-only">Search</label>
+        <div class="search-row">
+          <input id="rsQuery" type="search" placeholder="Type a student ID or name, e.g. STU-1002 or Nusrat" autocomplete="off">
+          <button class="btn primary" id="rsGo" type="button">Search</button>
+        </div>
+        <div id="rsMatches" class="matches"></div>
+      </div>
+      <div id="rsResult"></div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ============ CONFIRM DIALOG ============ -->
+<div class="overlay" id="confirmOverlay" hidden>
+  <div class="dialog" role="dialog" aria-modal="true" aria-labelledby="confirmTitle">
+    <h3 id="confirmTitle">Please confirm</h3>
+    <p id="confirmText"></p>
+    <div class="actions end">
+      <button class="btn" id="confirmNo">Cancel</button>
+      <button class="btn danger" id="confirmYes">Delete</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
